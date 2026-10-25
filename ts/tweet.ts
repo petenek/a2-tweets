@@ -60,32 +60,13 @@ class Tweet {
 
         return this.text.substring(index3 + 3, endIndex).trim();
     }
-        // if(!this.written) {
-        //     return "";
-        // }
-        // let index1: number = this.text.indexOf("https://");
-        // let index2: number = this.text.indexOf("#Runkeeper");
-        // let realindex: number = index1 < index2 ? index1 : index2;
-        // if (index1==-1 && index2==-1) {
-        //     realindex = this.text.length;
-        // }
-        // else if (index1==-1) {
-        //     realindex = index2;
-        // }
-        // else if (index2==-1){
-        //     realindex = index1;
-        // }
-        // let index3: number = this.text.indexOf(" - ");
-
-        // return this.text.substring(index3+3, realindex).trim();
-        //TODO: parse the written text from the tweet
 
     get activityType():string {
         if (this.source !== "completed_event") {
             return "unknown";
         }
 
-        const text = this.text.toLowerCase();
+        const text = this.text.toLowerCase()
 
         if (text.includes("mountain bike") || text.includes("mtn bike")) {
             return "mtn bike";
@@ -145,7 +126,7 @@ class Tweet {
             return "row";
         } else if (text.includes("skate")) {
             return "skate";
-        } else if (text.includes("run")) {
+        } else if (text.includes("run ")) {
             return "run";
         } else if (text.includes("walk")) {
             return "walk";
