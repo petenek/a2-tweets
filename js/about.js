@@ -33,8 +33,12 @@ function parseTweets(runkeeper_tweets) {
 	let liveCount=0;
 	let achievementCount=0;
 	let miscellaneousCount=0;
+	let user_written = 0;
 	for (let i=0;i<tweet_array.length;i++) {
 		if (tweet_array[i].source == 'completed_event') {
+			if (tweet_array[i].written){
+				user_written++;
+			}
 			completedCount++;
 		}
 		else if (tweet_array[i].source == 'live_event') {
@@ -55,6 +59,10 @@ function parseTweets(runkeeper_tweets) {
 	document.getElementsByClassName('liveEventsPct')[0].innerText = (liveCount/tweet_array.length*100).toFixed(2) + "%";
 	document.getElementsByClassName('achievementsPct')[0].innerText = (achievementCount/tweet_array.length*100).toFixed(2) + "%";
 	document.getElementsByClassName('miscellaneousPct')[0].innerText = (miscellaneousCount/tweet_array.length*100).toFixed(2) + "%";
+	document.getElementsByClassName('completedEvents')[1].innerText = completedCount;
+	document.getElementsByClassName('written')[0].innerText = user_written;
+	document.getElementsByClassName('writtenPct')[0].innerText = (user_written/completedCount*100).toFixed(2) + "%";
+
 }
 
 //Wait for the DOM to load
