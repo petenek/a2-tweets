@@ -11,8 +11,6 @@ function parseTweets(runkeeper_tweets) {
 
 	const completedTweets = tweet_array.filter(function (tweet) { return tweet.source === "completed_event"});
 
-	document.getElementById("numberActivities").innerText = completedTweets.length;
-
 	const activityCounts = {};
 
 	completedTweets.forEach(function(tweet) {
@@ -24,6 +22,8 @@ function parseTweets(runkeeper_tweets) {
 	const activityData = Object.keys(activityCounts).map(function(type) {return { activity: type, count: activityCounts[type] };});
 
 	activityData.sort(function(a, b) {return b.count - a.count;});
+
+	document.getElementById("numberActivities").innerText = activityData.length;
 
 	const topThree = activityData.slice(0, 3).map(function(item) {return item.activity;});
 
@@ -252,7 +252,7 @@ document.addEventListener("DOMContentLoaded", function () {
         averageChart.style.display = meansAreHidden ? "block" : "none";
 
         aggregateButton.innerText = meansAreHidden
-            ? "Show individual distances"
+            ? "All activities"
             : "Show means";
     });
 

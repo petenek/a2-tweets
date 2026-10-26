@@ -53,8 +53,6 @@ function updateSearchResults(){
 
 	const matchingTweets = writtenTweets.filter(function(tweet) {return tweet.writtenText.toLowerCase().includes(query);});
 	searchCount.innerText = matchingTweets.length;
-	console.log(matchingTweets[0]);
-	console.log(matchingTweets[0].getHTMLTableRow(1));
 
 	tweetTable.innerHTML = matchingTweets.map(function(tweet, index) {return tweet.getHTMLTableRow(index + 1);}).join('');
 }
