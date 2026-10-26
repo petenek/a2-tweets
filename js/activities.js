@@ -76,6 +76,7 @@ function parseTweets(runkeeper_tweets) {
         "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
         "description": "Individual activity distances by day of the week.",
         "data": {
+			"name": "distances",
             "values": distanceData
         },
         "mark": {
@@ -113,58 +114,22 @@ function parseTweets(runkeeper_tweets) {
         }
     };
 
-    vegaEmbed("#distanceVis", distanceSpec, { actions: false });
+    const meanData = [];
+	topThree.forEach(a => weekdayOrder.forEach(d => {
+		const rows = distanceData.filter(r => r.activity === a && r.day === d);
+		if (rows.length) meanData.push({activity: a, day: d, distance: rows.reduce((s, r) => s + r.distance, 0) / rows.length});
+	}));
 
-	const averageDistanceSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-        "description": "Average activity distance by day of the week.",
-        "data": {
-            "values": distanceData
-        },
-        "mark": {
-			"type": "point",
-			"point": {
-				"filled": false,
-				"size": 80
-			}
-		},
-        "encoding": {
-            "x": {
-                "field": "day",
-                "type": "ordinal",
-                "sort": weekdayOrder,
-                "title": "time (day)"
-            },
-            "y": {
-                "aggregate": "mean",
-                "field": "distance",
-                "type": "quantitative",
-                "title": "Mean of Distance (miles)"
-            },
-            "color": {
-                "field": "activity",
-                "type": "nominal",
-                "title": "Activity",
-				"scale": {
-					"domain": topThree,
-					"range": ["blue","red","yellow"]
-				}
-            },
-            "tooltip": [
-                { "field": "activity", "type": "nominal", "title": "Activity" },
-                { "field": "day", "type": "ordinal", "title": "Day" },
-                {
-                    "aggregate": "mean",
-                    "field": "distance",
-                    "type": "quantitative",
-                    "title": "Average miles",
-                    "format": ".2f"
-                }
-            ]
-        }
-    };
+	vegaEmbed("#distanceVis", distanceSpec, { actions: false }).then(function (result) {
+		const button = document.getElementById("aggregate");
+		let showingMeans = false;
 
-    vegaEmbed("#distanceVisAggregated", averageDistanceSpec,{ actions: false });
+		button.addEventListener("click", function () {
+			showingMeans = !showingMeans;
+			result.view.change("distances", vega.changeset().remove(() => true).insert(showingMeans ? meanData : distanceData)).run();
+			button.innerText = showingMeans ? "Show all activities" : "Show means";
+		});
+	});
 
 	const distancesByActivity = {};
 
@@ -238,23 +203,7 @@ function parseTweets(runkeeper_tweets) {
     document.getElementById("weekdayOrWeekendLonger").innerText = longerPeriod;
 }
 
+
 document.addEventListener("DOMContentLoaded", function () {
-    const aggregateButton = document.getElementById("aggregate");
-    const individualChart = document.getElementById("distanceVis");
-    const averageChart = document.getElementById("distanceVisAggregated");
-
-    averageChart.style.display = "none";
-
-    aggregateButton.addEventListener("click", function () {
-        const meansAreHidden = averageChart.style.display === "none";
-
-        individualChart.style.display = meansAreHidden ? "none" : "block";
-        averageChart.style.display = meansAreHidden ? "block" : "none";
-
-        aggregateButton.innerText = meansAreHidden
-            ? "All activities"
-            : "Show means";
-    });
-
     loadSavedRunkeeperTweets().then(parseTweets);
 });
